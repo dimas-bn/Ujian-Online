@@ -13,7 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
-      <body className="bg-slate-50 min-h-screen">{children}</body>
+      <body className="bg-slate-50 min-h-screen" suppressHydrationWarning>{children}</body>
     </html>
   );
 }

@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 // Middleware ini menggantikan checkSession()/isValidSession() manual di code.gs.
 // Supabase Auth yang mengelola token, middleware ini cuma menyegarkannya
 // tiap request supaya sesi tidak kadaluarsa di tengah pemakaian.
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(

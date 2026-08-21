@@ -233,3 +233,29 @@ create policy "admin guru akses penuh violation_logs"
 -- client langsung saat siswa mengerjakan ujian. Cara paling aman: buat VIEW
 -- terpisah (mis. questions_public) tanpa kolom correct_answer, dan endpoint
 -- API "ambil soal ujian" query lewat view itu, bukan tabel questions asli.
+
+-- ============================================================
+-- 11. RLS TAMBAHAN untuk tabel master data & referensi
+-- Supabase akan menandai tabel tanpa RLS sebagai potensi risiko saat
+-- schema.sql pertama kali dijalankan ("Potential issue detected").
+-- Policy di bawah ini mengunci semuanya secara default (hanya bisa
+-- dibaca oleh user yang sudah login), lalu membuka akses baca yang
+-- benar-benar dibutuhkan alur login, validasi PIN, dan ambil soal.
+-- Insert/update/delete tetap tertutup di sini - operasi tulis untuk
+-- tabel-tabel ini dilakukan lewat API route dengan service_role key.
+-- ============================================================
+
+alter table classes enable row level security;
+alter table subjects enable row level security;
+alter table exam_classes enable row level security;
+alter table exams enable row level security;
+alter table teacher_assignments enable row level security;
+alter table images enable row level security;
+alter table app_config enable row level security;
+
+create policy "user lihat profil sendiri" on users for select using (auth_id = auth.uid());
+create policy "authenticated lihat classes" on classes for select using (auth.role() = 'authenticated');
+create policy "authenticated lihat subjects" on subjects for select using (auth.role() = 'authenticated');
+create policy "authenticated lihat exam_classes" on exam_classes for select using (auth.role() = 'authenticated');
+create policy "authenticated lihat exams" on exams for select using (auth.role() = 'authenticated');
+create policy "authenticated lihat questions" on questions for select using (auth.role() = 'authenticated');
